@@ -5,12 +5,14 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-
+import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import getValidationErrors from '../../utils/getValidationErros';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
@@ -24,13 +26,54 @@ import {
   Icon,
 } from './styles';
 
-const SignIn: React.FC = () => {
-  const navigation = useNavigation();
-  const passwordInputRef = useRef<TextInput>(null);
-  const formRef = useRef<FormHandles>(null);
+interface SignInFormData {
+  email: string;
+  password: string;
+}
 
-  const handleSign = useCallback(data => {
-    console.log(data);
+const SignIn: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+
+  const navigation = useNavigation();
+
+  const handleSign = useCallback(async (data: SignInFormData) => {
+    try {
+      formRef.current?.setErrors({});
+
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('Email required')
+          .email('Type a valid email'),
+        password: Yup.string().required('Password required'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      // await signIn({
+      //   email: data.email,
+      //   password: data.password,
+      // });
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationErrors(err);
+
+        const message = Object.entries(errors);
+
+        Alert.alert(`Error!`, `${message[0][1]}`);
+
+        formRef.current?.setErrors(errors);
+
+        return;
+      }
+
+      Alert.alert(
+        'Authentication Error',
+        'An authentication error has ocurred.',
+      );
+    }
   }, []);
 
   return (
