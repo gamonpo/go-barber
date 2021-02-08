@@ -14,6 +14,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
 import { useNavigation } from '@react-navigation/native';
+import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErros';
 
 import Input from '../../components/Input';

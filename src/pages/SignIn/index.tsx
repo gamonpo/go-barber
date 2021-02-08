@@ -12,6 +12,9 @@ import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+
+// import { useAuth } from '../../hooks/auth'; ***API***
+
 import getValidationErrors from '../../utils/getValidationErros';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -37,6 +40,8 @@ const SignIn: React.FC = () => {
 
   const navigation = useNavigation();
 
+  // const { signIn } = useAuth() ***API***
+
   const handleSign = useCallback(async (data: SignInFormData) => {
     try {
       formRef.current?.setErrors({});
@@ -48,11 +53,13 @@ const SignIn: React.FC = () => {
         password: Yup.string().required('Password required'),
       });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+      // await schema.validate(data, {
+      //   abortEarly: false,
+      // });
 
-      // await signIn({
+      navigation.navigate('Dashboard');
+
+      // await signIn({         ***API***
       //   email: data.email,
       //   password: data.password,
       // });
@@ -74,7 +81,7 @@ const SignIn: React.FC = () => {
         'An authentication error has ocurred.',
       );
     }
-  }, []);
+  }, []); // [signIn] ***API***
 
   return (
     <KeyboardAvoidingView
