@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   View,
+  Modal,
 } from 'react-native';
 
 import * as Yup from 'yup';
@@ -30,6 +31,10 @@ import {
   UserAvatarButton,
   UserAvatar,
   BackButton,
+  UserModal,
+  UserModalView,
+  UserModalButton,
+  UserModalText,
 } from './styles';
 import { useAuth } from '../../hooks/auth';
 import colors from '../../style/colors';
@@ -48,11 +53,15 @@ interface RouteParams {
 
 const Profile: React.FC = () => {
   const navigation = useNavigation();
-  const route = useRoute();
+  // const route = useRoute();
 
-  const routeParams = route.params as RouteParams;
+  // const routeParams = route.params as RouteParams;
 
-  const [photo, setPhoto] = useState(routeParams.avatar);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [photo, setPhoto] = useState(
+    'https://cdn2.iconfinder.com/data/icons/gradient-purple-navigation-and-transactional-for-w/40/profile-purp-512.png',
+  );
 
   // const { user, updateUser } = useAuth()
   const formRef = useRef<FormHandles>(null);
@@ -132,42 +141,43 @@ const Profile: React.FC = () => {
     }
   }, []);
 
-  const handleUpdateAvatar = useCallback(() => {
-    // ImagePicker.launchCamera(
-    //   {
-    //     mediaType: 'photo',
-    //     includeBase64: false,
-    //     maxHeight: 500,
-    //     maxWidth: 500,
-    //   },
-    //   response => {
-    //     console.log('entrou');
-    //     if (response.didCancel) {
-    //       return;
-    //     }
-    //     if (response.errorCode) {
-    //       Alert.alert('Update error');
-    //     }
+  const handleCamera = useCallback(() => {
+    ImagePicker.launchCamera(
+      {
+        mediaType: 'photo',
+        includeBase64: false,
+        maxHeight: 500,
+        maxWidth: 500,
+      },
+      response => {
+        if (response.didCancel) {
+          return;
+        }
+        if (response.errorCode) {
+          Alert.alert('Update error');
+        }
 
-    //     console.log(response.uri);
+        setPhoto(response.uri);
 
-    //     setPhoto(response.uri);
+        setModalVisible(false);
 
-    //     // const data = new FormData();
+        //     // const data = new FormData();
 
-    //     // data.append('avatar', {
-    //     //   type: 'image/jpg',
-    //     //   name: `${user.id}.jpg`,
-    //     //   uri: response.uri,
-    //     // });
+        //     // data.append('avatar', {
+        //     //   type: 'image/jpg',
+        //     //   name: `${user.id}.jpg`,
+        //     //   uri: response.uri,
+        //     // });
 
-    //     // ***API***
-    //     // api.patch('users/avatar', data).then((apiResponse) => {
-    //     //   updateUser(apiResponse.data);
-    //     // })
-    //   },
-    // );
+        //     // ***API***
+        //     // api.patch('users/avatar', data).then((apiResponse) => {
+        //     //   updateUser(apiResponse.data);
+        //     // })
+      },
+    );
+  }, []); // ***API***updateUser, user.id
 
+  const handleGallery = useCallback(() => {
     ImagePicker.launchImageLibrary(
       {
         mediaType: 'photo',
@@ -176,7 +186,6 @@ const Profile: React.FC = () => {
         maxWidth: 500,
       },
       response => {
-        console.log('entrou');
         if (response.didCancel) {
           return;
         }
@@ -184,25 +193,29 @@ const Profile: React.FC = () => {
           Alert.alert('Update error');
         }
 
-        console.log(response.uri);
-
         setPhoto(response.uri);
 
-        // const data = new FormData();
+        setModalVisible(false);
 
-        // data.append('avatar', {
-        //   type: 'image/jpg',
-        //   name: `${user.id}.jpg`,
-        //   uri: response.uri,
-        // });
+        //     // const data = new FormData();
 
-        // ***API***
-        // api.patch('users/avatar', data).then((apiResponse) => {
-        //   updateUser(apiResponse.data);
-        // })
+        //     // data.append('avatar', {
+        //     //   type: 'image/jpg',
+        //     //   name: `${user.id}.jpg`,
+        //     //   uri: response.uri,
+        //     // });
+
+        //     // ***API***
+        //     // api.patch('users/avatar', data).then((apiResponse) => {
+        //     //   updateUser(apiResponse.data);
+        //     // })
       },
     );
   }, []); // ***API***updateUser, user.id
+
+  const handleUpdateAvatar = useCallback(() => {
+    setModalVisible(true);
+  }, []);
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -222,6 +235,24 @@ const Profile: React.FC = () => {
 
           <UserAvatarButton onPress={handleUpdateAvatar}>
             <UserAvatar source={{ uri: photo }} />
+
+            <UserModal
+              animationType="slide"
+              transparent
+              visible={modalVisible}
+              onRequestClose={() => {
+                setModalVisible(false);
+              }}
+            >
+              <UserModalView>
+                <UserModalButton onPress={handleCamera}>
+                  <UserModalText>Camera</UserModalText>
+                </UserModalButton>
+                <UserModalButton onPress={handleGallery}>
+                  <UserModalText>Gallery</UserModalText>
+                </UserModalButton>
+              </UserModalView>
+            </UserModal>
           </UserAvatarButton>
 
           <View>

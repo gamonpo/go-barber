@@ -35,3 +35,28 @@ export const UserAvatar = styled.Image`
 
   align-self: center;
 `;
+
+export const UserModal = styled.Modal``;
+
+export const UserModalView = styled.View`
+  margin: 0 20px;
+  background-color: rgba(62, 59, 71, 1);
+  top: ${`${height * 0.2}px`};
+
+  justify-content: center;
+  align-items: center;
+`;
+export const UserModalButton = styled.TouchableOpacity`
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background-color: ${colors.color_three};
+  height: 20%;
+  width: 60%;
+  margin: 10px;
+`;
+export const UserModalText = styled.Text`
+  font-size: 20px;
+  color: ${colors.color_one};
+  font-family: 'Roboto-Medium';
+`;
