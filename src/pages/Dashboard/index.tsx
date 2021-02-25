@@ -44,17 +44,17 @@ const Dashboard: React.FC = () => {
     {
       id: '1',
       name: 'Santino Pereira',
-      avatar_url: `${img}`,
+      avatar_url: img,
     },
     {
       id: '2',
       name: 'Marquinho da Silva',
-      avatar_url: `${img}`,
+      avatar_url: img,
     },
     {
       id: '3',
       name: 'Paulinho Cabral',
-      avatar_url: `${img}`,
+      avatar_url: img,
     },
   ]);
 
@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
   // },[])
 
   const navigateToProfile = useCallback(() => {
-    navigate('Profile');
+    navigate('Profile', { avatar: img });
   }, [navigate]);
 
   const navigateToCreateAppointment = useCallback(

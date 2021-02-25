@@ -9,9 +9,15 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import api from '../services/api';
 
+interface User {
+  id: string;
+  email: string;
+  avatar_url: string;
+  name: string;
+}
 interface AuthState {
   token: string;
-  user: object;
+  user: User;
 }
 
 interface SignInCredentials {
@@ -20,10 +26,11 @@ interface SignInCredentials {
 }
 
 interface AuthContextData {
-  user: object;
+  user: User;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
   loading: boolean;
+  updateUser(user: User): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -72,11 +79,25 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut, loading }}>
+    <AuthContext.Provider
+      value={{ user: data.user, signIn, signOut, loading, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
+
+const updataUser = useCallback(
+  async (user: User) => {
+    await localStorage.setItem('@GoBarber:user', JSON.stringify(user));
+
+    setData({
+      token: data.token,
+      user,
+    });
+  },
+  [setData, data.token],
+);
 
 function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
